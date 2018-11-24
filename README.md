@@ -58,4 +58,4 @@ now we have a script that we could pass to hbase shell for execution
 ```
 hbase shell ./ratings2.txt
 ```
-(this will take a while to execute; for a non-blocking variant try ```hbase shell  ./ratings2.txt > shell.out 2>&1 &```
+(this will take a while to execute; for a non-blocking variant try ```hbase shell  ./ratings2.txt > shell.out 2>&1 &```)
