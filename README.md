@@ -51,7 +51,8 @@ HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimpor
 Let's now use the simplified ratings file as an imput to transform and load into a separate RATINGS2 table
 
 ```
+echo "create 'RATINGS2','rating'" > ratings2.txt
 tail -n +2 ratings_s.csv | awk -v tbl=RATINGS2 -F, '{print "put '\''" tbl "'\'','\''" $2 "'\'','\''
-rating:rating" $1 "'\'','\''" $3 "'\''\n" "put '\''" tbl "'\'','\''" $2 "'\'','\''rating:timestamp" $1 "'\'','\''" $4 "'\''"}'
+rating:rating" $1 "'\'','\''" $3 "'\''\n" "put '\''" tbl "'\'','\''" $2 "'\'','\''rating:timestamp" $1 "'\'','\''" $4 "'\''"}' >> ratings2.txt
 ```
 
