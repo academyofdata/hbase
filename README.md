@@ -87,7 +87,7 @@ tail -n +2 ratings_s.csv | awk -F, '{print NR%8":"$4","$2","$1","$3}' > ratings4
 ```
 Another deterministic key management procedure is to use a hash of the key (assuming that the key itself has enough entropy); for instance in the example here, where the key is a timestamp (with enough entropy) we could just sha1 the key (we don't really care that sha1 is not cryptographically secure, we just need a uniform function). So we could do
 ```
-tail -n +2 ratings_s.csv | awk -F, '{print "echo " $4 " | sha1sum|awk '\''{printf($1)}'\'';echo \","$2","$1","$3"\""}' | bash > ratings4.csv
+tail -n +2 ratings_s.csv | awk -F, '{print "echo " $4 " | sha1sum|awk '\''{printf($1)}'\'';echo \","$2","$1","$3","$4"\""}' | bash > ratings4.csv
 ```
 
 Finally, just as before, put the transformed file in HDFS and run ImportTsv (much faster than the shell scripts)
