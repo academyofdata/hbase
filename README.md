@@ -59,3 +59,11 @@ now we have a script that we could pass to hbase shell for execution
 hbase shell ./ratings2.txt
 ```
 (this will take a while to execute; for a "non-blocking" variant try ```hbase shell  ./ratings2.txt > shell.out 2>&1 &```)
+
+let's now use the same technique, but let's limit ourselves to storing just two pieces of information for each rating - the userid and the rating. We will thus use a column that will be called e.g. 310 for the user with the id 310, the value in that column will be the rating of the said user.
+
+```
+echo "create 'RATINGS3','rating'" > ratings3.txt
+tail -n +2 ratings_s.csv | awk -v tbl=RATINGS3 -F, '{print "put '\''" tbl "'\'','\''" $2 "'\'','\''rating:" $1 "'\'','\''" $3 "'\''"}' >> ratings3.txt
+```
+
