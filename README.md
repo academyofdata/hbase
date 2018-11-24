@@ -78,6 +78,15 @@ tail -n +2 ratings_s.csv | awk -F, '{print $4":"$2","$1","$3}' > ratings4.csv
 ```
 Because the timestamps are not uniformly distributed, we have lots of keys starting with 1 and because HBase uses a lexicographic key ordering most of the keys will be handled by the same region server, so we should adopt a salting strategy to distribute the keys more uniformly. For instance let's use the mod 10 of the timestamp as a 'bucket' id (the least significant digit of the timestamp is more uniformly distributed than the most significant one), thus the transformation would look like this
 ```
-tail -n +2 ratings_s.csv | awk -F, '{print $4%10":"$4":"$2","$1","$3}' > ratings4.csv
+tail -n +2 ratings_s.csv | awk -F, '{print $4%10":"$4","$2","$1","$3}' > ratings4.csv
 ```
-this salting method has the advantage that is deterministic (same timestamp will always fall in the same bucket) - this property might come handy when hashing known/non-generated ids (say a systemid) 
+this salting method has the advantage that is deterministic (same timestamp will always fall in the same bucket) - this property might come handy when hashing known/non-generated ids (say a systemid).
+Just as before, put the transformed file in HDFS and run ImportTsv (much faster than the shell scripts)
+```
+HADOOP_USER_NAME=hdfs hdfs dfs -put ratings4.csv /tmp/
+```
+then create the table and import the data
+```
+echo create "'RATINGS4','rating'" | hbase shell
+HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=, -Dimporttsv.columns="HBASE_ROW_KEY,rating:movieid,rating:userid,rating:rating" RATINGS4 hdfs:///tmp/ratings4.csv
+```
