@@ -71,3 +71,10 @@ then use a shell to load it into HBase
 hbase shell ./ratings3.txt
 ```
 
+## ROWKEY management
+Let's assume we'll want to lookup these ratings by the time they were given, rather than by movieid (as it was the case so far). This means we should include the timestamp as the first part of the ROWKEY. The simplest way would be to transform the input file using the following line, then using ImportTsv to load it 
+```
+tail -n +2 ratings_s.csv | awk -F, '{print $4":"$2","$1","$3}' > ratings4.csv
+```
+
+
