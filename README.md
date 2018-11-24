@@ -10,7 +10,7 @@ wget https://raw.githubusercontent.com/academyofdata/data/master/users.csv -O $O
 ```
 use bash and some utilities to prepare files in a format that's suitable for importtsv 
 ```
-awk -F, -v u=1 -v m=8 -v OFS="," -v ORS="" '{print $m":"$u",";for(i=1;i<=NF;i++)printf("%s%s",$i,(i!=NF)?OFS:"\n")}' ratings.csv
+awk -F, -v u=1 -v m=8 -v OFS="," -v ORS="" '{print $m":"$u",";for(i=1;i<=NF;i++)printf("%s%s",$i,(i!=NF)?OFS:"\n")}' ratings.csv > ratings1.csv
 
 ```
 put the files into HDFS
