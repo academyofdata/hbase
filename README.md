@@ -66,4 +66,8 @@ let's now use the same technique, but let's limit ourselves to storing just two 
 echo "create 'RATINGS3','rating'" > ratings3.txt
 tail -n +2 ratings_s.csv | awk -v tbl=RATINGS3 -F, '{print "put '\''" tbl "'\'','\''" $2 "'\'','\''rating:" $1 "'\'','\''" $3 "'\''"}' >> ratings3.txt
 ```
+then use a shell to load it into HBase
+```
+hbase shell ./ratings3.txt
+```
 
