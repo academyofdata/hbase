@@ -33,7 +33,14 @@ Version 1.1.2.2.6.2.0-205, r5210d2ed88d7e241646beab51e9ac147a973bdcc, Sat Aug 26
 
 hbase(main):001:0> create 'RATINGS1','user','rating','movie'
 ```
-and finally use ImportTsv to load the file into HBase
+make sure it's created
+```
+hbase(main):003:0> list 'RATINGS1'
+TABLE                                                                                                                       
+RATINGS1                                                                                                                    
+1 row(s) in 0.0050 seconds
+```
+and finally use ImportTsv to load the file into HBase, exit the shell and issue the following command
 ```
 HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=,  -Dimporttsv.columns="HBASE_ROW_KEY,user:userid,user:age,user:gender,user:occupation,user:zip,rating:rating,rating:timestamp,movie:movieid,movie:title,movie:year,movie:genres" RATINGS1 hdfs:///tmp/ratings1.csv
 ```
