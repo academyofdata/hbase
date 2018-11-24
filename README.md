@@ -76,5 +76,8 @@ Let's assume we'll want to lookup these ratings by the time they were given, rat
 ```
 tail -n +2 ratings_s.csv | awk -F, '{print $4":"$2","$1","$3}' > ratings4.csv
 ```
-
-
+Because the timestamps are not uniformly distributed, we have lots of keys starting with 1 and because HBase uses a lexicographic key ordering most of the keys will be handled by the same region server, so we should adopt a salting strategy to distribute the keys more uniformly. For instance let's use the mod 10 of the timestamp as a 'bucket' id (the least significant digit of the timestamp is more uniformly distributed than the most significant one), thus the transformation would look like this
+```
+tail -n +2 ratings_s.csv | awk -F, '{print $4%10":"$4":"$2","$1","$3}' > ratings4.csv
+```
+this salting method has the advantage that is deterministic (same timestamp will always fall in the same bucket) - this property might come handy when hashing known/non-generated ids (say a systemid) 
