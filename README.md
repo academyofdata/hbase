@@ -1,4 +1,4 @@
-# hbase
+# Apache HBase basics
 start by downloading the data files
 ```
 export OUTDIR=.
@@ -24,4 +24,5 @@ we could now put the files into HDFS
 ```
 HADOOP_USER_NAME=hdfs hdfs dfs -put $OUTDIR/ratings1.csv /tmp/
 ```
+
 
