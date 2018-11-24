@@ -10,10 +10,17 @@ wget https://raw.githubusercontent.com/academyofdata/data/master/users.csv -O $O
 ```
 use bash and some utilities to prepare files in a format that's suitable for importtsv 
 ```
-awk -F, -v u=1 -v m=8 -v OFS="," -v ORS="" '{print $m":"$u",";for(i=1;i<=NF;i++)printf("%s%s",$i,(i!=NF)?OFS:"\n")}' $OUTDIR/ratings.csv > $OUTDIR/ratings1.csv
+awk -F, -v u=1 -v m=8 -v OFS="," -v ORS="" '{print $m":"$u",";for(i=1;i<=NF;i++)printf("%s%s",$i,(i!=NF)?OFS:"\n")}' $OUTDIR/ratings.csv | tail -n +2 > $OUTDIR/ratings1.csv
 
 ```
-put the files into HDFS
+executing the script on the line above has the effect of creating a slightly modified version of the denormalized rating file ratings.csv, i.e. each line is augmented with a first field that's the composition of the movieid and userid, which looks like this
+```
+4637:31,4637,35,F,9,48302,3.0,2000-07-19 18:48:41,31,Dangerous Minds (1995),1995,{Drama}
+3841:31,3841,45,M,18,26101,3.0,2000-08-11 13:14:31,31,Dangerous Minds (1995),1995,{Drama}
+```
+(we've also eliminated the header line by piping through the tail utility)
+
+we could now put the files into HDFS
 ```
 HADOOP_USER_NAME=hdfs hdfs dfs -put $OUTDIR/ratings1.csv /tmp/
 ```
