@@ -80,7 +80,7 @@ Because the timestamps are not uniformly distributed, we have lots of keys start
 ```
 tail -n +2 ratings_s.csv | awk -F, '{print $4%10":"$4","$2","$1","$3}' > ratings4.csv
 ```
-this salting method has the advantage that is deterministic (same timestamp will always fall in the same bucket) - this property might come handy when hashing known/non-generated ids (say a systemid).
+this salting method has the advantage that is deterministic (same timestamp will always fall in the same bucket) - this property might come handy when hashing known/non-generated ids (say a systemid). The main disadvantage of the non-deterministic hashing is that any lookup needs to be done in every bucket. That is, assuming that we have a key that has been salted into 10 buckets (just as above) we would need to lookup 0:<x>, 1:<x>,....,9:<x>
 In this case we could've used something else to salt the key, for instance the line number in the original file - actually the remainder of the division of the line number to 8 (assuming we want 8 'buckets')
 ```
 tail -n +2 ratings_s.csv | awk -F, '{print NR%8":"$4","$2","$1","$3}' > ratings4.csv
