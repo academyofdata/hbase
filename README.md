@@ -1,4 +1,5 @@
 # Apache HBase basics
+## Preparation
 start by downloading the data files
 ```
 export OUTDIR=.
@@ -8,6 +9,7 @@ wget https://raw.githubusercontent.com/academyofdata/inputs/master/ratings.csv.g
 gunzip -f $OUTDIR/ratings.csv.gz
 wget https://raw.githubusercontent.com/academyofdata/data/master/users.csv -O $OUTDIR/users.csv
 ```
+## ImportTsv from denormalized ratings file
 use bash and some utilities to prepare files in a format that's suitable for importtsv 
 ```
 awk -F, -v u=1 -v m=8 -v OFS="," -v ORS="" '{print $m":"$u",";for(i=1;i<=NF;i++)printf("%s%s",$i,(i!=NF)?OFS:"\n")}' $OUTDIR/ratings.csv | tail -n +2 > $OUTDIR/ratings1.csv
