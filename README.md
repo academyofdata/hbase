@@ -83,10 +83,10 @@ then use a shell to load it into HBase
 ```
 hbase shell ./ratings3.txt
 ```
-## We have now three tables RATINGS2, RATINGS2_1, RATINGS3 that have MOVIEDID as row key but different column arrangements:
-## - RATINGS2 has column qualifiers: ratings+userid (value rating) and ratings+TS (value timestamp)
-## - RATINGS2_1 has column qualifiers: userid+rating (value rating) and timestamp+rating (value timestamp)
-## - RATINGS3 has column qualifier: userid and value rating. 
+We have now three tables RATINGS2, RATINGS2_1, RATINGS3 that have MOVIEDID as row key but different column arrangements:
+* RATINGS2 has column qualifiers: ratings+userid (value rating) and ratings+TS (value timestamp)
+* RATINGS2_1 has column qualifiers: userid+rating (value rating) and timestamp+rating (value timestamp)
+* RATINGS3 has column qualifier: userid and value rating. 
 
 Please see www.academyofdata.com/hbase for futher exercises on RATINGS1 table.   
 
