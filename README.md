@@ -145,3 +145,7 @@ ROW                             COLUMN+CELL
  1000:3032                      column=rating:userid, timestamp=970350876000, value=3032                                 
 3 row(s) in 0.1760 seconds
 ```
+we could achieve a similar result by using an extra parameter to the ```put``` commands i.e. 
+```
+put 'table', 'row', 'cf:col', 'value', timestamp
+```
