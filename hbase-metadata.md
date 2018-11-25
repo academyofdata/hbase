@@ -101,7 +101,7 @@ ROW                              COLUMN+CELL
  c3933edc46a29a7bef74935322.    
 
 ```
-let's only look at the "info:regioninfo" columns, as they have all the information about the regions
+because one of the regions was split there are some additional bits of information ("info:splitA", "info:splitB"), so let's only look at the "info:regioninfo" columns, as they have all the information about the regions
 
 ```
 scan 'hbase:meta',{ROWPREFIXFILTER=>'RATINGS2',COLUMNS=>["info:regioninfo"]}
