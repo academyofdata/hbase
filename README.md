@@ -62,6 +62,12 @@ hbase shell ./ratings2.txt
 
 let's now use the same technique, but let's limit ourselves to storing just two pieces of information for each rating - the userid and the rating. We will thus use a column that will be called e.g. 310 for the user with the id 310, the value in that column will be the rating of the said user.
 
+alternatively we could create/import data in a table that has the same kind of information, but with a small model change: instead of naming the columns "rating{userid}" and "timestamp{userid}" inside the column family "rating", we will name them "{userid}rating" and "{userid}timestamp"
+```
+echo "create 'RATINGS2_1','rating'" > ratings2_1.txt
+tail -n +2 ratings_s.csv | awk -v tbl=RATINGS2_1 -F, '{print "put '\''" tbl "'\'','\''" $2 "'\'','\''rating:"$1"rating'\'','\''" $3 "'\''\n" "put '\''" tbl "'\'','\''" $2 "'\'','\''rating:"$1"timestamp'\'','\''" $4 "'\''"}' >> ratings2_1.txt
+```
+
 ```
 echo "create 'RATINGS3','rating'" > ratings3.txt
 tail -n +2 ratings_s.csv | awk -v tbl=RATINGS3 -F, '{print "put '\''" tbl "'\'','\''" $2 "'\'','\''rating:" $1 "'\'','\''" $3 "'\''"}' >> ratings3.txt
