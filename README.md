@@ -149,3 +149,23 @@ we could achieve a similar result by using an extra parameter to the ```put``` c
 ```
 put 'table', 'row', 'cf:col', 'value', timestamp
 ```
+
+## Reverse timestamps
+We can use the concept called reverse timestamp to generate keys that, although the timestamp increases, the last one is always the first to be found in a scan (normally, because of the HBase ordering, it will be last). And how do we generate decreasing values from an increasing one? We simply choose a large enough constant and we subtract the increasing value from it. For this particular example we've chosen the large constant to be the Unix timestamp associated with 1st of January, 3000. So we've done this
+```
+tail -n +2 ratings_s.csv | awk -v tsmax=`date +%s -d "3000-01-01 00:00:00"` -F, '{print $2":"(tsmax - $4)":"$1","$2","$1","$3","$4"000"}' > ratings6.csv
+HADOOP_USER_NAME=hdfs hdfs dfs -put ratings6.csv /tmp/
+echo create "'RATINGS6','rating'" | hbase shell
+HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=, -Dimporttsv.columns="HBASE_ROW_KEY,rating:movieid,rating:userid,rating:rating,HBASE_TS_KEY" RATINGS6 hdfs:///tmp/ratings6.csv
+```
+(we have also used the trick before to set a specific timestamp to each cell - this way we don't need to tell anyone querying the data, if they want to know when the rating was given, what's our "magic" constant)
+thus, finding last rating for the movie with id 3211 is done like this
+```
+scan "RATINGS6",{FILTER=>"(PrefixFilter ('3211:'))",LIMIT=>1}
+ROW                             COLUMN+CELL                                                                              
+ 3211:31459895182:5878          column=rating:movieid, timestamp=1043784818000, value=3211                               
+ 3211:31459895182:5878          column=rating:rating, timestamp=1043784818000, value=3.0                                 
+ 3211:31459895182:5878          column=rating:userid, timestamp=1043784818000, value=5878                                
+1 row(s) in 1.1110 seconds
+```
+
