@@ -1,6 +1,6 @@
 # Apache HBase basics
-## Preparation
-start by downloading the data files
+## Preparation of data 
+start by downloading the data files in local file system
 ```
 export OUTDIR=.
 wget https://raw.githubusercontent.com/academyofdata/data/master/movies-with-year.csv -O $OUTDIR/movies.csv
@@ -9,7 +9,8 @@ wget https://raw.githubusercontent.com/academyofdata/inputs/master/ratings.csv.g
 gunzip -f $OUTDIR/ratings.csv.gz
 wget https://raw.githubusercontent.com/academyofdata/data/master/users.csv -O $OUTDIR/users.csv
 ```
-## ImportTsv from denormalized ratings file
+## We will use HBase utility ImportTsv to import data from the denormalized ratings file. But before we need to build 
+## the data accordingly: Our key will be movieid:userid and we will have 3 column families.  
 use bash and some utilities to prepare files in a format that's suitable for importtsv 
 ```
 awk -F, -v u=1 -v m=8 -v OFS="," -v ORS="" '{print $m":"$u",";for(i=1;i<=NF;i++)printf("%s%s",$i,(i!=NF)?OFS:"\n")}' $OUTDIR/ratings.csv | tail -n +2 > $OUTDIR/ratings1.csv
@@ -22,11 +23,11 @@ executing the script on the line above has the effect of creating a slightly mod
 ```
 (we've also eliminated the header line by piping through the tail utility)
 
-we could now put the files into HDFS
+we can now put the files into HDFS
 ```
 HADOOP_USER_NAME=hdfs hdfs dfs -put $OUTDIR/ratings1.csv /tmp/
 ```
-before loading the data, let's create the HBase table, so use the shell to do it
+before loading the data, let's create the HBase table. We will use the HBase shell to create RATINGS1 table with 3 CF's
 ```
 $ hbase shell
 HBase Shell; enter 'help<RETURN>' for list of supported commands.
@@ -46,9 +47,10 @@ and finally use ImportTsv to load the file into HBase, exit the shell and issue 
 ```
 HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=,  -Dimporttsv.columns="HBASE_ROW_KEY,user:userid,user:age,user:gender,user:occupation,user:zip,rating:rating,rating:timestamp,movie:movieid,movie:title,movie:year,movie:genres" RATINGS1 hdfs:///tmp/ratings1.csv
 ```
+Please see www.academyofdata.com/hbase for futher exercises on RATINGS1 table. 
 
 ## Importing with an HBase shell script
-Let's now use the simplified ratings file as an input to transform and load into a separate RATINGS2 table. The RATINGS2 has a single colum family (rating) but each entry has a different column name based on the user that rates the current movie (say 4321), that is the user id is being made part of the column name; so you have rating:rating1234 with value 4.0 to signal that the user 1234 has rated movie 4321 with a rating of 4
+Let's now use the simplified ratings file as an input to transform and load into a separate RATINGS2 table. The RATINGS2 has a single colum family (rating) but each entry has a different column name based on the user that rates the current movie (say 4321), that is the user id is being made part of the column name; so you have rating:rating1234 with value 4.0 to signal that the user 1234 has rated movie 4321 with a rating of 4. The key is the movieid and the entries in 4321 movieid key will show all the ratings and timeline of each rating for this movie. 
 
 ```
 echo "create 'RATINGS2','rating'" > ratings2.txt
@@ -71,7 +73,7 @@ hbase shell ./ratings2_1.txt
 ```
 to load the data
 
-let's now use the same technique, but let's limit ourselves to storing just two pieces of information for each rating - the userid and the rating. We will thus use a column that will be called e.g. 310 for the user with the id 310, the value in that column will be the rating of the said user.
+let's now use the same technique, but this time we would like our column qualifier to be the userid and we limit ourselves to storing just two pieces of information for each rating - the userid (column qualifier) and the rating (value). We will thus use a column that will be called e.g. 310 for the user with the id 310, the value in that column will be the rating of the said user.
 
 ```
 echo "create 'RATINGS3','rating'" > ratings3.txt
@@ -81,8 +83,15 @@ then use a shell to load it into HBase
 ```
 hbase shell ./ratings3.txt
 ```
+## We have now three tables RATINGS2, RATINGS2_1, RATINGS3 that have MOVIEDID as row key but different column arrangements:
+## - RATINGS2 has column qualifiers: ratings+userid (value rating) and ratings+TS (value timestamp)
+## - RATINGS2_1 has column qualifiers: userid+rating (value rating) and timestamp+rating (value timestamp)
+## - RATINGS3 has column qualifier: userid and value rating. 
 
-## ROWKEY management
+Please see www.academyofdata.com/hbase for futher exercises on RATINGS1 table.   
+
+## ROWKEY management. 
+## distributing the writes
 Let's assume we'll want to lookup these ratings by the time they were given, rather than by movieid (as it was the case so far). This means we should include the timestamp as the first part of the ROWKEY. The simplest way would be to transform the input file using the following line, then using ImportTsv to load it 
 ```
 tail -n +2 ratings_s.csv | awk -F, '{print $4":"$2","$1","$3}' > ratings4.csv
@@ -92,6 +101,7 @@ Because the timestamps are not uniformly distributed, we have lots of keys start
 tail -n +2 ratings_s.csv | awk -F, '{print $4%10":"$4","$2","$1","$3}' > ratings4.csv
 ```
 this salting method has the advantage that is deterministic (same timestamp will always fall in the same bucket) - this property might come handy when hashing known/non-generated ids (say a systemid). The main disadvantage of the non-deterministic hashing is that any lookup needs to be done in every bucket. That is, assuming that we have a key that has been salted into 10 buckets (just as above) we would need to lookup 0:{x}, 1:{x},....,9:{x}
+
 In this case we could've used something else to salt the key, for instance the line number in the original file - actually the remainder of the division of the line number to 8 (assuming we want 8 'buckets')
 ```
 tail -n +2 ratings_s.csv | awk -F, '{print NR%8":"$4","$2","$1","$3}' > ratings4.csv
