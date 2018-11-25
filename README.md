@@ -120,3 +120,12 @@ then create the table and import the data
 echo create "'RATINGS4','rating'" | hbase shell
 HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=, -Dimporttsv.columns="HBASE_ROW_KEY,rating:movieid,rating:userid,rating:rating" RATINGS4 hdfs:///tmp/ratings4.csv
 ```
+## Manipulating timestamps
+By default, in shell operations or ImportTsv, because we've not specified a timestamp, the default system time is used. Since we do have a timestamp in our data, let's convince HBase to use it as the timestamp of the operation. We'll resort again to ImportTsv and specifically to a pre-defined variable called HBASE_TS_KEY. To be able to use it we will need the time to be expressed in miliseconds (it is in seconds in the file). We'll also define the ROWKEY as [movieid]:[userid]
+
+```
+tail -n +2 ratings_s.csv | awk -F, '{print $2":"$1","$2","$1","$3","$4"000"}' > ratings5.csv
+HADOOP_USER_NAME=hdfs hdfs dfs -put ratings5.csv /tmp/
+echo create "'RATINGS5','rating'" | hbase shell
+HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=, -Dimporttsv.columns="HBASE_ROW_KEY,rating:movieid,rating:userid,rating:rating,HBASE_TS_KEY" RATINGS5 hdfs:///tmp/ratings5.csv
+```
