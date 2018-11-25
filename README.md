@@ -129,3 +129,19 @@ HADOOP_USER_NAME=hdfs hdfs dfs -put ratings5.csv /tmp/
 echo create "'RATINGS5','rating'" | hbase shell
 HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=, -Dimporttsv.columns="HBASE_ROW_KEY,rating:movieid,rating:userid,rating:rating,HBASE_TS_KEY" RATINGS5 hdfs:///tmp/ratings5.csv
 ```
+now the data in "RATINGS5" is stored with the 'correct' timestamp
+
+```
+> scan "RATINGS5",{LIMIT=>3}
+ROW                             COLUMN+CELL                                                                              
+ 1000:1733                      column=rating:movieid, timestamp=986711740000, value=1000                                
+ 1000:1733                      column=rating:rating, timestamp=986711740000, value=2.0                                  
+ 1000:1733                      column=rating:userid, timestamp=986711740000, value=1733                                 
+ 1000:2820                      column=rating:movieid, timestamp=986395650000, value=1000                                
+ 1000:2820                      column=rating:rating, timestamp=986395650000, value=3.0                                  
+ 1000:2820                      column=rating:userid, timestamp=986395650000, value=2820                                 
+ 1000:3032                      column=rating:movieid, timestamp=970350876000, value=1000                                
+ 1000:3032                      column=rating:rating, timestamp=970350876000, value=4.0                                  
+ 1000:3032                      column=rating:userid, timestamp=970350876000, value=3032                                 
+3 row(s) in 0.1760 seconds
+```
