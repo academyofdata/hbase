@@ -47,7 +47,7 @@ and finally use ImportTsv to load the file into HBase, exit the shell and issue 
 ```
 HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=,  -Dimporttsv.columns="HBASE_ROW_KEY,user:userid,user:age,user:gender,user:occupation,user:zip,rating:rating,rating:timestamp,movie:movieid,movie:title,movie:year,movie:genres" RATINGS1 hdfs:///tmp/ratings1.csv
 ```
-Please see [here](hbase.academyofdata.com) for futher exercises on RATINGS1 table. 
+Please see [here](//hbase.academyofdata.com) for futher exercises on RATINGS1 table. 
 
 ## Importing with an HBase shell script
 Let's now use the simplified ratings file as an input to transform and load into a separate RATINGS2 table. The RATINGS2 has a single colum family (rating) but each entry has a different column name based on the user that rates the current movie (say 4321), that is the user id is being made part of the column name; so you have rating:rating1234 with value 4.0 to signal that the user 1234 has rated movie 4321 with a rating of 4. The key is the movieid and the entries in 4321 movieid key will show all the ratings and timeline of each rating for this movie. 
@@ -88,7 +88,7 @@ We have now three tables RATINGS2, RATINGS2_1, RATINGS3 that have MOVIEDID as ro
 * RATINGS2_1 has column qualifiers: userid+rating (value rating) and timestamp+rating (value timestamp)
 * RATINGS3 has column qualifier: userid and value rating. 
 
-Please see [here](hbase.academyofdata.com) for futher exercises on RATINGS1 table.   
+Please see [here](//hbase.academyofdata.com) for futher exercises on RATINGS1 table.   
 
 ## ROWKEY management. 
 ## distributing the writes
