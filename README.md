@@ -159,13 +159,13 @@ echo create "'RATINGS6','rating'" | hbase shell
 HADOOP_USER_NAME=hdfs  hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=, -Dimporttsv.columns="HBASE_ROW_KEY,rating:movieid,rating:userid,rating:rating,HBASE_TS_KEY" RATINGS6 hdfs:///tmp/ratings6.csv
 ```
 (we have also used the trick before to set a specific timestamp to each cell - this way we don't need to tell anyone querying the data, if they want to know when the rating was given, what's our "magic" constant)
-thus, finding last rating for the movie with id 3211 is done like this
+thus, finding last rating for the movie with id 3911 is done like this
 ```
-scan "RATINGS6",{FILTER=>"(PrefixFilter ('3211:'))",LIMIT=>1}
+scan "RATINGS6",{STARTROW=>"3911:",LIMIT=>1}
 ROW                             COLUMN+CELL                                                                              
- 3211:31459895182:5878          column=rating:movieid, timestamp=1043784818000, value=3211                               
- 3211:31459895182:5878          column=rating:rating, timestamp=1043784818000, value=3.0                                 
- 3211:31459895182:5878          column=rating:userid, timestamp=1043784818000, value=5878                                
-1 row(s) in 1.1110 seconds
+ 3911:31457310974:5950          column=rating:movieid, timestamp=1046369026000, value=3911                               
+ 3911:31457310974:5950          column=rating:rating, timestamp=1046369026000, value=4.0                                 
+ 3911:31457310974:5950          column=rating:userid, timestamp=1046369026000, value=5950                                
+1 row(s) in 0.0080 seconds
 ```
 
