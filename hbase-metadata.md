@@ -101,6 +101,21 @@ ROW                              COLUMN+CELL
  c3933edc46a29a7bef74935322.    
 
 ```
+let's only look at the "info:regioninfo" columns, as they have all the information about the regions
+
+```
+scan 'hbase:meta',{ROWPREFIXFILTER=>'RATINGS2',COLUMNS=>["info:regioninfo"]}
+ROW                              COLUMN+CELL                                                                                
+ RATINGS2,,1543148749479.fb1ca2a column=info:regioninfo, timestamp=1543148749725, value={ENCODED => fb1ca2a7c9fcda82049aaf02
+ 7c9fcda82049aaf02af142edd.      af142edd, NAME => 'RATINGS2,,1543148749479.fb1ca2a7c9fcda82049aaf02af142edd.', STARTKEY => 
+                                 '', ENDKEY => '2'}                                                                         
+ RATINGS2,2,1543148894312.66d912 column=info:regioninfo, timestamp=1543148894516, value={ENCODED => 66d912622f2e17207895846d
+ 622f2e17207895846df3480216.     f3480216, NAME => 'RATINGS2,2,1543148894312.66d912622f2e17207895846df3480216.', STARTKEY =>
+                                  '2', ENDKEY => '4'}                                                                       
+ RATINGS2,4,1543148894312.3e347a column=info:regioninfo, timestamp=1543148894516, value={ENCODED => 3e347ac3933edc46a29a7bef
+ c3933edc46a29a7bef74935322.     74935322, NAME => 'RATINGS2,4,1543148894312.3e347ac3933edc46a29a7bef74935322.', STARTKEY =>
+                                  '4', ENDKEY => ''}    
+```
 
 
 
