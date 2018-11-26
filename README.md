@@ -9,8 +9,7 @@ wget https://raw.githubusercontent.com/academyofdata/inputs/master/ratings.csv.g
 gunzip -f $OUTDIR/ratings.csv.gz
 wget https://raw.githubusercontent.com/academyofdata/data/master/users.csv -O $OUTDIR/users.csv
 ```
-## We will use HBase utility ImportTsv to import data from the denormalized ratings file. But before we need to build 
-## the data accordingly: Our key will be movieid:userid and we will have 3 column families.  
+## We will use HBase utility ImportTsv to import data from the denormalized ratings file. But before we need to build the data accordingly: Our key will be movieid:userid and we will have 3 column families.  
 use bash and some utilities to prepare files in a format that's suitable for importtsv 
 ```
 awk -F, -v u=1 -v m=8 -v OFS="," -v ORS="" '{print $m":"$u",";for(i=1;i<=NF;i++)printf("%s%s",$i,(i!=NF)?OFS:"\n")}' $OUTDIR/ratings.csv | tail -n +2 > $OUTDIR/ratings1.csv
